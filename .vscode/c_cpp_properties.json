@@ -5,7 +5,9 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/mm",
-                "${workspaceFolder}"
+                "${workspaceFolder}",
+                "${workspaceFolder}/fs",
+                "${workspaceFolder}/drivers"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

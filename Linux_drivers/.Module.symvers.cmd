@@ -1,0 +1,1 @@
+savedcmd_/home/hrushiraj/cat/drivers/Module.symvers :=  scripts/mod/modpost -M -m -a      -o /home/hrushiraj/cat/drivers/Module.symvers -n -T /home/hrushiraj/cat/drivers/modules.order -i Module.symvers -e 

@@ -27,6 +27,15 @@ static struct task* buffer_wait=NULL;
 #define INSERT_QUEUE 1
 #define INSERT 3
 
+/*
+    @attention:
+    1.The kernel frequently uses "delayed write" to avoid unnecessary disk writes
+    ,leaving the block in buffer cache and hoping for a cache hit on block.
+    More the buffers, more the cache hit chances
+    2. Maintain file system integrity as a single image of disk blocks
+        avoid data corruption
+    3. high throughput
+*/
 void buffer_init(void){
     struct buffer_head* h=start_buffer;/*
         stores the actual starting buffer_head address 
@@ -80,7 +89,7 @@ void buffer_init(void){
 
 
 
-static inline void wait_on_buffer(struct buffer_head* bh){
+inline void wait_on_buffer(struct buffer_head* bh){
     cli();
         while(bh->b_lock)
             sleep_on(&bh->b_wait);
@@ -329,4 +338,8 @@ void brelse(struct buffer_head* bh){
     }
     if(bh->count==0)
         bh->b_lock=false;
+}
+
+void bwrite(struct buffer_head* bh){
+    
 }

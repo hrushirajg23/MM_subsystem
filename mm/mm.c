@@ -145,5 +145,10 @@ void growreg(struct e_region* pentry,int change){
         5. byte count for amount of data to load 
 */
 void loadreg(struct e_region* pentry,unsigned long* addr,struct ii_node* inode,unsigned long from,long count){
-    
+    /*
+        2^32 bytes of addressable physical memory
+        if PAGE_SIZE==1024, it becomes 2^22 pages of physical memory
+        therefore 
+
+    */
 }
