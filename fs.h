@@ -3,6 +3,10 @@
 
 #include<stdbool.h>
 #include<sys/types.h>
+
+#define READ 0
+#define WRITE 1
+
 #define NAMELEN 14
 #define TOTAL_INODES 100
 #define TOTAL_FILE 50
@@ -13,6 +17,11 @@
 #define NULL ((void*)0)
 #endif
 
+
+
+/**/
+#define MAJOR(a) ((unsigned)(a)>>8) /*The upper 24 bits for major number*/
+#define MINOR(a) (a& 0xff) /*clear out upper 24 bits to extract lower 8 bits*/
 #define INODES_PER_BLOCK  ((BLOCK_SIZE)/(sizeof(struct d_inode)))
 
 #define DIR_ENTRIES_PER_BLOCK ((BLOCK_SIZE)/sizeof(struct dir_entry ))
