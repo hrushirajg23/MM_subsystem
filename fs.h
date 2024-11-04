@@ -17,7 +17,7 @@
 #define NULL ((void*)0)
 #endif
 
-
+#define BLOCKS_FOR_DISK_ORG 10
 
 /**/
 #define MAJOR(a) ((unsigned)(a)>>8) /*The upper 24 bits for major number*/
@@ -27,6 +27,8 @@
 #define DIR_ENTRIES_PER_BLOCK ((BLOCK_SIZE)/sizeof(struct dir_entry ))
 
 typedef char buffer_block[BLOCK_SIZE];
+
+#define DEVICE 4 //randoom
 
 struct buffer_head{
     char* b_data;   
@@ -56,9 +58,9 @@ struct d_inode{
     unsigned long i_time;
     unsigned char i_gid;
     unsigned char i_nlinks;
-    unsigned short i_data[9];
+    unsigned int i_block;
     /*
-        No indirection for entries of disk blocks
+        indirection block for entries of disk blocks
     */
 };
 
@@ -76,7 +78,11 @@ struct ii_inode{
     unsigned long i_time;
     unsigned char i_gid;
     unsigned char i_nlinks;
-    unsigned short i_data[9];
+    unsigned int i_block; /*
+        block number which will be storing 
+        256 block entries i.e indirect block
+    
+    */
 
     struct task* i_wait;
     unsigned long i_atime;/*accesed time*/
@@ -110,10 +116,11 @@ struct super{
         Regarding blocks
     */
     int s_fs_size; //size_of_filesystem
-    unsigned short s_nfree_blk; //number of freeblocks
+    unsigned int s_nfree_blk; //number of freeblocks
   //  unsigned short s_free_blk_ls[50]; //list of free disk block numbers
-    struct blk_node* s_free_blk_ls;
-    unsigned short s_next_free_blk; //index of next_free block number
+    unsigned short s_curr_free_block;
+    unsigned int s_blk_index; //index of next_free block number
+    struct buffer_head* s_fbls[10]; /*free block list*/
     /*
         Regarding inode
     */
@@ -149,4 +156,8 @@ extern struct buffer_head* start_buffer;
 extern int nr_buffer;
 
 
+void brelse(struct buffer_head* bh);
+struct buffer_head* bread(int dev,int block);
+struct buffer_head* getblk(int dev,int block);
+void bwrite(struct buffer_head* bh); 
 #endif
