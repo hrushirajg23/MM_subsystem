@@ -85,7 +85,7 @@ void growreg(struct e_region* pentry,int change){
             long i=0;
             change-=capacity;
             /*
-                copy these much to to page fram
+                copy these much to to page frame
             */
             if(change >0){
                 pentry->r_size+=capacity;

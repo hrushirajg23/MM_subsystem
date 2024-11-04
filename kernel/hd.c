@@ -2,6 +2,7 @@
 #include<mm.h>
 #include<include/meow/config.h>
 #include"include/asm/system.h"
+#include<stdio.h>
 /*
     MAJOR number repersents the device and minor number represents the parition 
     on that device  
@@ -187,3 +188,109 @@ loop:
 
 
 }
+
+
+/*
+    This function creates a linked list of blocks
+    in memory. each block will contain 256 entries 
+    and last entry will contain address of next block
+    containing other 256 entries and so on.
+
+*/
+void organize_disk(){
+
+   
+    /*
+        lets assume boot block and super block takes total 2 blocks
+        i.e first 2 blocks(0-1) assume size of eac block to be 1024 bytes
+        in correspondence to buffer hence 1 buffer is needed for boot and super blk.
+
+        /*
+            and next 10 blocks will be holding in memory data of disk lists
+            so total 12 blocks are used by filesys. 
+
+            as sector size = 512 and buffer size = 1024 
+
+            buffers needed to write  are 6
+
+            hence blocks start from 12 while others will be hardcoded. 
+        */
+    if(super_block.s_fs_size==0){
+        super_block.s_blk_index=0;
+        super_block.s_curr_free_block=0;
+    }
+    int blkno=12;
+    for(int i=2;i<=11;i++){
+        
+        struct buffer_head* bh=getblk(DEVICE,i);
+        if(bh==NULL){
+            printf("organizing disk failed\n");
+        }
+        super_block.s_fbls[i-2]=bh;
+
+        if(super_block.s_fs_size==0){
+            /*means installing system first time on a device
+                we need to organize lists
+
+            */  
+           /*
+            this is ideal calculation but but
+            since 10 
+             int total_blks=hd_info[0].cyl*hd_info[0].head*hd_info[0].sec;     
+           */
+
+            int* ptr=(int*)bh->b_data;
+            for(int j=0;j<BLOCK_SIZE/sizeof(int);j++){
+                *ptr=blkno++;        
+                ptr++;
+            }
+            
+        }
+
+    }
+    if(super_block.s_fs_size==0){
+        super_block.s_nfree_blk=blkno-12;
+    }
+    
+}
+
+
+
+int alloc(int dev){
+    if(super_block.s_blk_index==BLOCK_SIZE/sizeof(int)){
+        if(super_block.s_curr_free_block==BLOCKS_FOR_DISK_ORG){
+            printf("blocks evacutated\n");
+            return -1;
+        }
+        super_block.s_curr_free_block++;
+        super_block.s_blk_index=0;
+    }
+    printf("block number %d and index number %d\n",super_block.s_curr_free_block,super_block.s_blk_index);
+    super_block.s_blk_index++;
+    return (int)super_block.s_fbls[super_block.s_curr_free_block]->b_data[super_block.s_blk_index-1];
+}
+
+void free(int blkno){
+    if(super_block.s_blk_index==0 ){
+        if(super_block.s_curr_free_block==2){
+            printf("failed organizing disk :free() \n");
+            return;
+        }
+        super_block.s_curr_free_block--;
+        super_block.s_blk_index=(BLOCK_SIZE/sizeof(int))-1;
+    }
+    else{
+        super_block.s_blk_index--;
+    }
+    int* ptr=(int*)&super_block.s_fbls[super_block.s_curr_free_block]->b_data[super_block.s_blk_index];
+    *ptr=blkno;
+}
+
+
+
+/*
+
+    blk 0 { 1 2 3 4 5 -------------------
+
+    blk 1 {100 101 102 103 104 ------------------}
+*/

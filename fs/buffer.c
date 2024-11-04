@@ -343,3 +343,24 @@ void brelse(struct buffer_head* bh){
 void bwrite(struct buffer_head* bh){
     
 }
+
+int bmap(struct ii_inode* inode,int offset){
+    if(offset >= inode->i_size ){
+        puts("issue in bmap , offset > filesize\n");
+    }
+
+    int x=offset%BLOCK_SIZE;
+    int index=offset-x;
+    index=index/BLOCK_SIZE;
+
+    struct buffer_head* bh=getblk(DEVICE,inode->i_block);
+    /*
+        index 0
+        index 1 
+    */
+   int block=(int)bh->b_data[index];
+
+    /*free bmap arrested block*/
+   return block;
+}
+

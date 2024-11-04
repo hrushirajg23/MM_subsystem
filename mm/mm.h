@@ -31,3 +31,9 @@
 #define MAP_NR(addr) (((addr)-LOW_MEM)>>12)
 
 
+void growreg(struct e_region* pentry,int change);
+
+unsigned long get_free_page(void);
+
+
+void free_page(unsigned long addr);
