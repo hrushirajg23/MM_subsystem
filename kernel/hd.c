@@ -4,7 +4,7 @@
 #include"include/asm/system.h"
 #include<stdio.h>
 /*
-    MAJOR number repersents the device and minor number represents the parition 
+    MAJOR number repersents the device_driver and minor number represents the specific device 
     on that device  
 
 */
